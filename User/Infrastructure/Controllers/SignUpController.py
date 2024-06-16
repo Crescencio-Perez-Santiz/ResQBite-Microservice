@@ -14,7 +14,8 @@ def create_signup_controller(user_repository):
             password=data["password"],
             location=data["location"],
             contact=Contact.Contact(
-                full_name=data["contact"]["full_name"],
+                name=data["contact"]["name"],
+                last_name=data["contact"]["last_name"],
                 address=data["contact"]["address"],
                 phone_number=data["contact"]["phone_number"],
             ),

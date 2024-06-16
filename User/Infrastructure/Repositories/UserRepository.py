@@ -15,7 +15,8 @@ class UserRepository(UserInterface):
             email=user.email,
             password=user.password,
             location=user.location,
-            full_name=user.contact.full_name,
+            name=user.contact.name,
+            last_name=user.contact.last_name,
             address=user.contact.address,
             phone_number=user.contact.phone_number,
         )
@@ -31,7 +32,8 @@ class UserRepository(UserInterface):
         self,
         user_uuid: int,
         password: str,
-        full_name: str,
+        name: str,
+        last_name: str,
         address: str,
         phone_number: str,
     ):
@@ -41,7 +43,8 @@ class UserRepository(UserInterface):
             raise Exception("User not found")
 
         user.password = password
-        user.full_name = full_name
+        user.name = name
+        user.last_name = last_name
         user.address = address
         user.phone_number = phone_number
         self.session.commit()

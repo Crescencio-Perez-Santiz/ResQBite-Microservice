@@ -11,11 +11,12 @@ def create_update_user_controller(user_repository):
     def update_user():
         data = request.get_json()
         password = data["password"]
-        full_name = data["full_name"]
+        name = data["name"]
+        last_name = data["last_name"]
         address = data["address"]
         phone_number = data["phone_number"]
         user_updated, status = UpdateUserUseCase(user_repository).execute(
-            password, full_name, address, phone_number
+            password, name, last_name, address, phone_number
         )
         return make_response(
             jsonify(
