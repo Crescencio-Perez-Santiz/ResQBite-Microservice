@@ -1,23 +1,20 @@
-// ListProductController.ts
-
 import { Request, Response } from 'express';
-import { ListProductUseCase } from '../../Application/ListProductUseCase';
-import { Repository } from '../Repositories/MysqlRepository';
+import { ListProductsUseCase } from '../../Application/UseCases/ListProductUseCase';
+import { IProductRepository } from '../../Domain/Repositories/IProductRepository';
 
 export class ListProductController {
-  private listProductUseCase: ListProductUseCase;
+  private listProductsUseCase: ListProductsUseCase;
 
-  constructor(private repository: Repository) {
-    this.listProductUseCase = new ListProductUseCase(repository);
+  constructor(private repository: IProductRepository) {
+    this.listProductsUseCase = new ListProductsUseCase(repository);
   }
 
   async list(req: Request, res: Response): Promise<void> {
     try {
-      const products = await this.listProductUseCase.execute();
-      res.status(200).json({ products }); // Devolver los productos en un objeto JSON
+      const products = await this.listProductsUseCase.execute();
+      res.status(200).json(products);
     } catch (error) {
-      console.error('Error al obtener la lista de productos:', error);
-      res.status(500).json({ message: 'Internal Server Error' });
+      res.status(500).json({ message: 'Internal Server Error', error});
     }
   }
 }
