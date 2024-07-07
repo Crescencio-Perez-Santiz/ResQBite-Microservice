@@ -36,7 +36,7 @@ class StoreRepository(StoreInterface):
         self.session.commit()
         return store
 
-    def list(self) -> list:
+    def list_stores(self) -> list:
         return self.session.query(Store).all()
 
     def get_store_by_rfc(self, rfc: str):

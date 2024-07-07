@@ -1,13 +1,13 @@
 from Application.UseCases.CreateStoreUseCase import CreateStoreUseCase
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
+# from flask_jwt_extended import jwt_required
 
 create_store_controller = Blueprint('create_store_controller', __name__)
 
 
 def create_store(store_repository):
     @create_store_controller.route('', methods=['POST'])
-    @jwt_required()
+    # @jwt_required()
     def create():
         try:
             image_file = request.files['url_image']

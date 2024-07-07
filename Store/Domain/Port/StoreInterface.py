@@ -16,5 +16,5 @@ class StoreInterface(ABC):
         pass
 
     @abstractmethod
-    def list(self) -> list:
+    def list_stores(self) -> list:
         pass

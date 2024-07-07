@@ -1,8 +1,6 @@
 import os
 from flask import jsonify
-from flask_jwt_extended import JWTManager, create_access_token
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import timedelta
+from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 
 load_dotenv()

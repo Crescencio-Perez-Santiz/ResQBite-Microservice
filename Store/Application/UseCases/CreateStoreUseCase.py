@@ -1,11 +1,12 @@
 from Domain.Entity.Store import Store
 from Domain.Entity.Address import Address
 from Domain.Entity.InformationStore import InformationStore
-from Infrastructure.ExternalServices.bucketStore import send_file
+from Infrastructure.Services.bucketStore import send_file
 from werkzeug.utils import secure_filename
 import os
 from ..Exceptions.StoreValidationExists import StoreValidationExists
 import tempfile
+import hashlib
 
 
 class CreateStoreUseCase:
@@ -18,15 +19,29 @@ class CreateStoreUseCase:
             raise Exception("RFC already exists")
         if store_validation.validate_store_by_phone_number(store_data['phone_number']):
             raise Exception("Phone number already exists")
-        filename = secure_filename(image_file.filename)
+
+        original_filename = secure_filename(image_file.filename)
+        hash_object = hashlib.sha256(original_filename.encode())
+        hex_dig = hash_object.hexdigest()
+        filename = f"{hex_dig}{os.path.splitext(original_filename)[1]}"
         temp_dir = tempfile.gettempdir()
         temp_path = os.path.join(
-            temp_dir, secure_filename(image_file.filename))
+            temp_dir, filename)
+
+        store_data_complete = Store(
+            name=store_data['name'],
+            rfc=store_data['rfc'],
+            address=None,
+            information=None
+        )
+        store_uuid = store_data_complete.uuid
+
         image_file.save(temp_path)
         bucket_name = os.getenv('S3_BUCKET_NAME')
         path = os.getenv('S3_PATH')
         object_name = f"{path}/{filename}"
-        send_file(temp_path, bucket_name, object_name)
+        send_file(temp_path, bucket_name, store_uuid, object_name
+                  )
         region = os.getenv('S3_PATH')
         space_name = bucket_name
         image_url = f"https://{space_name}.{
@@ -56,6 +71,5 @@ class CreateStoreUseCase:
             address=address,
             information=information
         )
-        print(store_data_complete)
 
         return self.store_repository.create(store_data_complete)
