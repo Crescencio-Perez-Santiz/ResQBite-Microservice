@@ -10,7 +10,7 @@ export const mongoConnection = async () => {
     await mongoose.connect(mongoUri, {
       user: process.env.DB_USER_MONGODB,
       pass: process.env.DB_PASSWORD_MONGODB,
-      authSource: 'admin', // Agrega authSource si es necesario
+      authSource: 'admin', //authSource si es necesario
     });
     console.log('Conexión exitosa a la base de datos con MongoDB LISTA!');
   } catch (error) {
