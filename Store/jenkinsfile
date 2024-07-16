@@ -1,9 +1,9 @@
 pipeline {
-	agent any
+    agent any
 
-	environment {
-		DOCKER_IMAGE = 'store-service'
-	}
+    environment {
+        DOCKER_IMAGE = 'store-service'
+    }
 
     stages {
         stage('Checkout') {
