@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     docker.image("${env.DOCKER_IMAGE}").inside {
-                        sh 'pytest'
+                        sh 'pytest Store/tests'
                     }
                 }
             }
