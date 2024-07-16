@@ -16,6 +16,8 @@ mongoConnection();
 // Middleware para analizar el cuerpo de las solicitudes JSON
 app.use(express.json());
 
+export default app;
+
 app.use('/', routes);
 app.listen(PORT, () => {
   console.log(`Servicio ${SERVICE_NAME} corriendo en http://localhost:${PORT}`);
