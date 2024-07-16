@@ -9,4 +9,4 @@ app = Flask(__name__)
 app = create_routes(app)
 
 if __name__ == '__main__':
-    app.run(host="192.168.1.73", port=4242)
+    app.run(host="192.168.1.83", port=4242, debug=True)

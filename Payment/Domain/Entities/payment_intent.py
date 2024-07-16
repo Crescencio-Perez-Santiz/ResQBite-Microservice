@@ -1,5 +1,6 @@
+
 class PaymentIntent:
-    def __init__(self, name: str, amount: int, description: str):
+    def __init__(self, name: str, amount: int, description: str, **kwargs):
         self.name = name
         self.amount = amount
         self.description = description
