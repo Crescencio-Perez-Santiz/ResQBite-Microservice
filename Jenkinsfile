@@ -2,21 +2,21 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'my-hexagonal-api'
+        DOCKER_IMAGE = 'api-payment'
     }
 
     stages {
         stage('Build') {
             steps {
                 script {
-                    docker.build(DOCKER_IMAGE, '-f Dockerfile .')
+                    docker.build("${DOCKER_IMAGE}:latest")
                 }
             }
         }
         stage('Deploy') {
             steps {
                 script {
-                    docker.run()
+                    sh 'docker run -d -p 4242:4242 ${DOCKER_IMAGE}:latest'
                 }
             }
         }

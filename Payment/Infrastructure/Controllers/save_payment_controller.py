@@ -1,11 +1,11 @@
 from flask import request, jsonify
 from Payment.Application.UseCases.save_payment_use_case import SavePaymentUseCase
-from Payment.Infrastructure.Persistence.mongo_payment_intent_repository import MongoPaymentIntentRepository
+from Payment.Infrastructure.Persistence.mysql_payment_intent_repository import MySQLPaymentIntentRepository
 from Payment.Application.Validator.input_validators import validate_save_payment  
 
 class SavePaymentController:
     def __init__(self):
-        self.payment_intent_repository = MongoPaymentIntentRepository()
+        self.payment_intent_repository = MySQLPaymentIntentRepository()
         self.save_payment_use_case = SavePaymentUseCase(self.payment_intent_repository)
 
     def save_payment(self):

@@ -1,10 +1,10 @@
-from flask import jsonify, request
+from flask import jsonify
 from Payment.Application.UseCases.get_payment_by_id_use_case import GetPaymentByIdUseCase
-from Payment.Infrastructure.Persistence.mongo_payment_intent_repository import MongoPaymentIntentRepository
+from Payment.Infrastructure.Persistence.mysql_payment_intent_repository import MySQLPaymentIntentRepository
 
 class GetPaymentByIdController:
     def __init__(self):
-        self.payment_intent_repository = MongoPaymentIntentRepository()
+        self.payment_intent_repository = MySQLPaymentIntentRepository()
         self.get_payment_by_id_use_case = GetPaymentByIdUseCase(self.payment_intent_repository)
 
     def get_payment_by_id(self, payment_id: str):
