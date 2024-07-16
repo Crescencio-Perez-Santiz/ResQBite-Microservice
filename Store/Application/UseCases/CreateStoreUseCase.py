@@ -7,6 +7,7 @@ import os
 from ..Exceptions.StoreValidationExists import StoreValidationExists
 import tempfile
 import hashlib
+from Infrastructure.Services.rabbitmq.NewStoreServiceSaga import NewStoreServiceSaga
 
 
 class CreateStoreUseCase:
@@ -71,5 +72,8 @@ class CreateStoreUseCase:
             address=address,
             information=information
         )
+
+        saga = NewStoreServiceSaga()
+        saga.send_store_info(store_data_complete.to_dict())
 
         return self.store_repository.create(store_data_complete)
