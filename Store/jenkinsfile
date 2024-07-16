@@ -1,0 +1,55 @@
+pipeline {
+	agent any
+
+	environment {
+		DOCKER_IMAGE = 'store-service'
+	}
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'feature/store-service', url: 'https://github.com/Crescens-Henry/ResQBite-Microservice.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    docker.build("${env.DOCKER_IMAGE}")
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    docker.image("${env.DOCKER_IMAGE}").inside {
+                        sh 'pytest'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    docker.image("${env.DOCKER_IMAGE}").push('latest')
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                docker.image("${env.DOCKER_IMAGE}").prune()
+            }
+        }
+        success {
+            echo 'Pipeline completado con éxito.'
+        }
+        failure {
+            echo 'Pipeline fallido.'
+        }
+    }
+}
