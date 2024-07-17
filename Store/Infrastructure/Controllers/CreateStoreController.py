@@ -10,7 +10,7 @@ def create_store(store_repository):
     @jwt_required()
     def create():
         try:
-            user_uuid = request.jwt_identity()
+            user_uuid = request.jwt_identity
             image_file = request.files['url_image']
             store_data = request.form.to_dict()
 
