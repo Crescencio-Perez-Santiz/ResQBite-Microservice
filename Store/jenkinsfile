@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'store-service'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
     }
 
     stages {
@@ -33,7 +34,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    docker.image("${env.DOCKER_IMAGE}").push('latest')
+                    withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                        docker.image("${env.DOCKER_IMAGE}").push('latest')
+                    }
                 }
             }
         }
