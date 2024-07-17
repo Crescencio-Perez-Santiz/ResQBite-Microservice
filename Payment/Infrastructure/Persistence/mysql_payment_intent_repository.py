@@ -1,28 +1,27 @@
 from Payment.Domain.Entities.payment_intent import PaymentIntent
 from Payment.Domain.Repositories.payment_intent_repository import PaymentIntentRepository
-from Payment.Infrastructure.Config.mysql_connection import mysql_connection
+
+from Payment.Infrastructure.Config.mysql_connection import DBConnection, PaymentModel
 
 class MySQLPaymentIntentRepository(PaymentIntentRepository):
     def __init__(self):
-        self.conn = mysql_connection()
-        self.cursor = self.conn.cursor(dictionary=True)
+        self.conn = DBConnection()
+        self.session = self.conn.Session()
 
-    def save(self, payment_intent: PaymentIntent):
-        query = "INSERT INTO payment_intents (name, amount, description) VALUES (%s, %s, %s)"
-        self.cursor.execute(query, (payment_intent.name, payment_intent.amount, payment_intent.description))
-        self.conn.commit()
+    def save(self, PaymentIntentDomain):
+       payment = PaymentModel(
+            name_uuid = PaymentIntentDomain.name_uuid,
+            amount = PaymentIntentDomain.amount,
+            description = PaymentIntentDomain.description,
+       )
+       self.session.add( payment )
+       self.session.commit()
+       return payment
 
     def get_all(self):
-        query = "SELECT * FROM payment_intents"
-        self.cursor.execute(query)
-        result = self.cursor.fetchall()
-        return [PaymentIntent(**row) for row in result]
+        payment = self.session.query(PaymentModel).all()
+        return payment
 
-    def get_by_id(self, payment_id: str):
-        query = "SELECT * FROM payment_intents WHERE id = %s"
-        self.cursor.execute(query, (payment_id,))
-        result = self.cursor.fetchone()
-        if result:
-            return PaymentIntent(**result)
-        else:
-            return None
+    def get_by_id(self, payment_id):
+        return self.db_session.query(PaymentModel).filter(PaymentModel .payment_id == payment_id).first()
+    
