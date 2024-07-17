@@ -14,3 +14,12 @@ class Address:
     neighborhood: str
     city: City
     reference: str
+
+    def to_dict(self):
+        return {
+            'street': self.street,
+            'number': self.number,
+            'neighborhood': self.neighborhood,
+            'city': self.city,
+            'reference': self.reference
+        }

@@ -12,7 +12,32 @@ class NewStoreServiceSaga:
             self.queue_name, self.exchange_name, self.routing_key)
 
     def send_store_info(self, store_info):
+
+        store_info = self.store_to_dict(store_info)
+
         message = json.dumps(store_info)
-        self.channel.basic_publish(
-            exchange=self.exchange_name, routing_key=self.routing_key, body=message)
-        print(f" [x] Sent {message}")
+        try:
+            self.channel.basic_publish(
+                exchange=self.exchange_name, routing_key=self.routing_key, body=message)
+        except Exception as e:
+            Exception("Error sending message to RabbitMQ")
+
+    def store_to_dict(self, store):
+        return {
+            'uuid': str(store.uuid),
+            'name': store.name,
+            'rfc': store.rfc,
+            'address': {
+                'street': store.address.street,
+                'number': store.address.number,
+                'neighborhood': store.address.neighborhood,
+                'city': store.address.city,
+                'reference': store.address.reference,
+            },
+            'information': {
+                'url_image': store.information.url_image,
+                'phone_number': store.information.phone_number,
+                'opening_hours': store.information.opening_hours,
+                'closing_hours': store.information.closing_hours,
+            }
+        }

@@ -17,7 +17,7 @@ def create_store(store_repository):
             result_store = create_store_use_case.execute(
                 store_data, image_file)
 
-            return jsonify(result_store.to_dict()), 201
+            return jsonify(result_store), 201
         except Exception as e:
             return jsonify({"error": str(e)}), 400
 

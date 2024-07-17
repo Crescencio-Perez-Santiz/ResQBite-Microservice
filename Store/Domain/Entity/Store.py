@@ -12,3 +12,12 @@ class Store:
     rfc: str
     address: Address
     information: InformationStore
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'rfc': self.rfc,
+            'address': self.address.to_dict() if self.address else None,
+            'information': self.information.to_dict() if self.information else None,
+            'uuid': self.uuid
+        }
