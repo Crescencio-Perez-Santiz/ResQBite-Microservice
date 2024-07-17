@@ -17,6 +17,7 @@ class Store(Base):
     neighborhood = Column(String(50), nullable=False)
     city = Column(String(50), nullable=False)
     reference = Column(String(255), nullable=True)
+    user_uuid = Column(String(255), nullable=True, unique=True)
 
     def to_dict(self):
         return {
@@ -31,5 +32,6 @@ class Store(Base):
             "number": self.number,
             "neighborhood": self.neighborhood,
             "city": self.city,
-            "reference": self.reference
+            "reference": self.reference,
+            "user_uuid": self.user_uuid
         }

@@ -12,6 +12,7 @@ class Store:
     rfc: str
     address: Address
     information: InformationStore
+    user_uuid: str
 
     def to_dict(self):
         return {
@@ -19,5 +20,6 @@ class Store:
             'rfc': self.rfc,
             'address': self.address.to_dict() if self.address else None,
             'information': self.information.to_dict() if self.information else None,
-            'uuid': self.uuid
+            'uuid': self.uuid,
+            'user_uuid': self.user_uuid
         }

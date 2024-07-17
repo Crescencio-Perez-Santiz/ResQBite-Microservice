@@ -14,7 +14,7 @@ class CreateStoreUseCase:
     def __init__(self, store_repository):
         self.store_repository = store_repository
 
-    def execute(self, store_data, image_file) -> Store:
+    def execute(self, store_data, image_file, user_uuid) -> Store:
         store_validation = StoreValidationExists(self.store_repository)
         if store_validation.validate_store_by_rfc(store_data['rfc']):
             raise Exception("RFC already exists")
@@ -73,7 +73,8 @@ class CreateStoreUseCase:
             name=store_data['name'],
             rfc=store_data['rfc'],
             address=address,
-            information=information
+            information=information,
+            user_uuid=user_uuid
         )
 
         saga = NewStoreServiceSaga()

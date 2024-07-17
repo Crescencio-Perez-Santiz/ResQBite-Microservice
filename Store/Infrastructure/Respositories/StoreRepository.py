@@ -21,7 +21,8 @@ class StoreRepository(StoreInterface):
             image=store.information.url_image,
             phone_number=store.information.phone_number,
             opening_hours=store.information.opening_hours,
-            closing_hours=store.information.closing_hours
+            closing_hours=store.information.closing_hours,
+            user_uuid=store.user_uuid
         )
 
         self.session.add(store)
