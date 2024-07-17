@@ -11,6 +11,8 @@ class NewStoreServiceSaga:
         self.channel = setup_rabbitmq(
             self.queue_name, self.exchange_name, self.routing_key)
 
+    # necestiamos crear un evento en el que cuando se cree tienda (la bd ya debe de estar llena con todos los datos necesarion es cuando se activa el evento para que en el microservicio de usuario aparezca la tienda creada)
+
     def send_store_info(self, store_info):
 
         store_info = self.store_to_dict(store_info)

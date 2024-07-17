@@ -12,7 +12,7 @@ class Store:
     rfc: str
     address: Address
     information: InformationStore
-    user_uuid: str
+    user_uuid: str = None
 
     def to_dict(self):
         return {

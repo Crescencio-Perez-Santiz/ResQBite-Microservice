@@ -10,13 +10,12 @@ def create_store(store_repository):
     @jwt_required()
     def create():
         try:
-            user_uuid = request.jwt_identity()
             image_file = request.files['url_image']
             store_data = request.form.to_dict()
 
             create_store_use_case = CreateStoreUseCase(store_repository)
             result_store = create_store_use_case.execute(
-                store_data, image_file, user_uuid)
+                store_data, image_file)
 
             return jsonify(result_store), 201
         except Exception as e:
