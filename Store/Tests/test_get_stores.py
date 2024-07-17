@@ -2,7 +2,6 @@ import pytest
 from unittest.mock import Mock
 from Application.UseCases.GetStoresUseCase import GetStoresUseCase
 
-
 @pytest.fixture
 def store_repository():
 	return Mock()
@@ -32,9 +31,7 @@ def test_get_stores(get_stores_use_case, store_repository):
 	]
 	store_repository.list_stores.return_value = mock_stores
 
-	# Ejecutar el caso de uso
 	stores = get_stores_use_case.execute()
 
-	# Verificar resultados
 	assert stores == mock_stores
 	store_repository.list_stores.assert_called_once()
