@@ -7,4 +7,4 @@ app = Flask(__name__)
 initialize_user_router(app, UserRepository())
 
 if __name__ == "__main__":
-    app.run("127.0.0.1", 5000, debug=True, load_dotenv=True)
+    app.run("0.0.0.0", 5000, debug=True, load_dotenv=True)
