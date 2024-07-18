@@ -11,18 +11,14 @@ class NewStoreServiceSaga:
         self.channel = setup_rabbitmq(
             self.queue_name, self.exchange_name, self.routing_key)
 
-    # necestiamos crear un evento en el que cuando se cree tienda (la bd ya debe de estar llena con todos los datos necesarion es cuando se activa el evento para que en el microservicio de usuario aparezca la tienda creada)
-
     def send_store_info(self, store_info):
-
         store_info = self.store_to_dict(store_info)
-
         message = json.dumps(store_info)
         try:
             self.channel.basic_publish(
                 exchange=self.exchange_name, routing_key=self.routing_key, body=message)
         except Exception as e:
-            Exception("Error sending message to RabbitMQ")
+            raise Exception("Error sending message to RabbitMQ") from e
 
     def store_to_dict(self, store):
         return {
@@ -41,5 +37,6 @@ class NewStoreServiceSaga:
                 'phone_number': store.information.phone_number,
                 'opening_hours': store.information.opening_hours,
                 'closing_hours': store.information.closing_hours,
-            }
+            },
+            'user_uuid': store.user_uuid,
         }
