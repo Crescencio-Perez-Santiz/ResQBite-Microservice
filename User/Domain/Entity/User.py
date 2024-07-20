@@ -9,10 +9,15 @@ class Location(Enum):
     SUCHIAPA = "SUCHIAPA"
 
 
+class user_type_suscriber(Enum):
+    COMUN = "COMUN"
+    PREMIUM = "PREMIUM"
+
 @dataclass
 class User:
     uuid: str = field(default_factory=uuid.uuid4, init=False)
     email: str
     password: str
     location: Location
+    user_type_suscriber: user_type_suscriber
     contact: Contact

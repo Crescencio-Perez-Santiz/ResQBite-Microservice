@@ -9,6 +9,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     location = Column(String(50), nullable=True)
+    user_type_suscriber = Column(String(50), nullable=True)
     name = Column(String(255), nullable=False)
     last_name = Column(String(255), nullable=False)
     address = Column(String(255), nullable=False)
@@ -20,6 +21,7 @@ class User(Base):
             "uuid": self.uuid,
             "email": self.email,
             "location": self.location,
+            "user_type_suscriber": self.user_type_suscriber,
             "name": self.name,
             "last_name": self.last_name,
             "address": self.address,

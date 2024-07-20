@@ -15,6 +15,7 @@ class UserRepository(UserInterface):
             email=user.email,
             password=user.password,
             location=user.location,
+            user_type_suscriber=user.user_type_suscriber,
             name=user.contact.name,
             last_name=user.contact.last_name,
             address=user.contact.address,
