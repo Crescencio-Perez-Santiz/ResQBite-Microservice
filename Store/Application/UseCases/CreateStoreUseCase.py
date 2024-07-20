@@ -57,7 +57,6 @@ class CreateStoreUseCase:
 
         store_data['url_image'] = image_url
         user_uuid = get_jwt_identity()
-        print(user_uuid)
         address = Address(
             street=store_data['street'],
             number=store_data['number'],
