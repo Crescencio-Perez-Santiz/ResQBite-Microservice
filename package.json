@@ -6,7 +6,8 @@
     "start": "nodemon dist/app.js",
     "dev": "tsnd --respawn src/app.ts",
     "build": "tsc",
-    "test": "jest --config=jest.config.js --verbose"
+    "test": "jest --config=jest.config.js --verbose",
+    "check-requirements": "ts-node requirements.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
