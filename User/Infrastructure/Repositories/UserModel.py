@@ -13,6 +13,7 @@ class User(Base):
     last_name = Column(String(255), nullable=False)
     address = Column(String(255), nullable=False)
     phone_number = Column(String(20), unique=True, nullable=False)
+    store_uuid = Column(String(255), nullable=True, unique=True)
 
     def to_dict(self):
         return {
@@ -23,4 +24,5 @@ class User(Base):
             "last_name": self.last_name,
             "address": self.address,
             "phone_number": self.phone_number,
+            "user_uuid": self.store_uuid
         }

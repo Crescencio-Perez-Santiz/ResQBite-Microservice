@@ -69,3 +69,15 @@ class UserRepository(UserInterface):
             user.location = location
             self.session.commit()
             return user
+
+    def find_by_uuid(self, user_uuid):
+        user = self.session.query(User).filter_by(uuid=user_uuid).first()
+        return user
+
+    def update_uuid(self, user_uuid, store_uuid):
+        user = self.get_user_by_uuid(user_uuid)
+        if user is None:
+            raise Exception("User not found")
+        user.store_uuid = store_uuid
+        self.session.commit()
+        return user

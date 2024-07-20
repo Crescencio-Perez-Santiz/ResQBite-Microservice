@@ -13,14 +13,14 @@ hostname = os.getenv('RABBITMQ_HOST')
 protocol = os.getenv('RABBITMQ_PROTOCOL')
 user = os.getenv('RABBITMQ_USER')
 password = os.getenv('RABBITMQ_PASS')
-port = os.getenv('RABBITMQ_PORT')
+port = int(os.getenv('RABBITMQ_PORT'))
 
 
 def setup_rabbitmq(queue_name, exchange_name, routing_key):
     credentials = pika.PlainCredentials(user, password)
     parameters = pika.ConnectionParameters(
         host=hostname,
-        port=int(port),
+        port=port,
         credentials=credentials,
         ssl_options=ssl_options
     )
