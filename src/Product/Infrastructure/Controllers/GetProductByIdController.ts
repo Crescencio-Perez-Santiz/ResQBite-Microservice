@@ -12,7 +12,6 @@ export class GetProductByIdController {
   async get(req: Request, res: Response): Promise<void> {
     try {
       const productId: string = req.params.productId;
-
       const result = await this.getProductByIdUseCase.execute(productId);
 
       if ('error' in result) {

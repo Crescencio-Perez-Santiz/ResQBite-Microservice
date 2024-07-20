@@ -5,5 +5,5 @@ export interface IProductRepository {
   listAll(): Promise<AProduct[]>;
   get_by_id(id: string): Promise<AProduct | null>;
   delete(id: string): Promise<void>;
-  update(id: string, productData: Partial<AProduct>): Promise<AProduct>;
+  update(productId: string, productData: Partial<AProduct>): Promise<AProduct>;
 }

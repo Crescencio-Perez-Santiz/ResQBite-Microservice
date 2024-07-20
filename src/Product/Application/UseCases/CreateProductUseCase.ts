@@ -1,6 +1,7 @@
 import { IProductRepository } from '../../Domain/Repositories/IProductRepository';
 import { AProduct } from '../../Domain/Entities/AProduct';
 
+
 export class CreateProductUseCase {
   constructor(private repository: IProductRepository) {}
 

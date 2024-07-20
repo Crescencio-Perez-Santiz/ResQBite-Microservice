@@ -2,7 +2,8 @@ import express, { Application } from 'express';
 import morgan from 'morgan';
 import routes from './Product/Interfaces/Delivery/Routes';
 import dotenv from 'dotenv';
-import { mongoConnection } from './Product/Infrastructure/Config/mongoConnection';
+import { sequelize } from './Product/Infrastructure/Config/mysqlConnection';
+import { connect as connectRabbitMQ } from './Product/Infrastructure/Config/rabbitMQConfig';
 
 const app: Application = express();
 dotenv.config();
@@ -11,14 +12,28 @@ app.use(morgan('dev'));
 const PORT = process.env.PORT || 3001;
 const SERVICE_NAME = process.env.SERVICE_NAME || 'Unknown Service';
 
-mongoConnection();
-
-// Middleware para analizar el cuerpo de las solicitudes JSON
 app.use(express.json());
 
-export default app;
+sequelize
+  .sync()
+  .then(() => {
+    console.log('Database connected');
+  })
+  .catch((error: Error) => {
+    console.error('Unable to connect to the database:', error);
+  });
+
+connectRabbitMQ()
+  .then(() => {
+    console.log('RabbitMQ connected');
+  })
+  .catch((error: Error) => {
+    console.error('Unable to connect to RabbitMQ:', error);
+  });
 
 app.use('/', routes);
 app.listen(PORT, () => {
   console.log(`Servicio ${SERVICE_NAME} corriendo en http://localhost:${PORT}`);
 });
+
+export default app;

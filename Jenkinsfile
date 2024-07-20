@@ -8,7 +8,6 @@ pipeline {
                     script {
                         
                         sh "cp \$ENV_FILE \$WORKSPACE/.env"
-                        
                         sh 'cat $WORKSPACE/.env'
                     }
                 }
@@ -38,3 +37,5 @@ pipeline {
         }
     }
 }
+
+

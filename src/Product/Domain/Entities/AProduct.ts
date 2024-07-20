@@ -3,23 +3,28 @@ import { Form } from './Form';
 
 
 export class AProduct {
+  id?: number;
   product_uuid: string;
   name: string;
   precio: number;
   quantity: number;
   sales_description: string;
   category: string;
-  form: Form;
-  image?: string; // Hacer el campo de imagen opcional
+  form:Form;
+  id_Store:number;
+  image?: string; 
 
-  constructor(name: string, precio: number, quantity: number, sales_description: string, category: string, form: Form, image?: string) {
+  constructor(name: string, precio: number, quantity: number, sales_description: string, category: string ,form:Form,  id_Store:number, image?: string) {
     this.product_uuid = uuidv4();
     this.name = name;
     this.precio = precio;
     this.quantity = quantity;
     this.sales_description = sales_description;
     this.category = category;
-    this.image = image; // Inicializar el campo de imagen si se proporciona
-    this.form = form;
+    this.form=form;
+    this.id_Store = id_Store;
+    this.image = image; 
+    
+    
   }
 }

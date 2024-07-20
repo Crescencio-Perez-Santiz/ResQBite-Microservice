@@ -4,10 +4,10 @@ import { DeleteProductController } from '../../Infrastructure/Controllers/Delete
 import { ListProductController } from '../../Infrastructure/Controllers/ListProductController';
 import { UpdateProductController } from '../../Infrastructure/Controllers/UpdateProductController';
 import { GetProductByIdController } from '../../Infrastructure/Controllers/GetProductByIdController';
-import { MongoProductRepository } from '../../Infrastructure/Persistence/MongoProductRepository';
+import { MySQLProductRepository } from '../../Infrastructure/Persistence/MysqlProductRepository';
 
 const router: Router = express.Router();
-const repository = new MongoProductRepository();
+const repository = new MySQLProductRepository();
 
 const createProductController = new CreateProductController(repository);
 const deleteProductController = new DeleteProductController(repository);

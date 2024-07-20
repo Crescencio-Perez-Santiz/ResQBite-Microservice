@@ -1,3 +1,4 @@
+// UpdateProductController.ts
 import { Request, Response } from 'express';
 import { UpdateProductUseCase } from '../../Application/UseCases/UpdateProductUseCase';
 import { IProductRepository } from '../../Domain/Repositories/IProductRepository';
@@ -6,6 +7,7 @@ import { Form } from '../../Domain/Entities/Form';
 import { s3 } from '../Config/awsConfig';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
+import { ProductSaga } from '../Services/ProductSaga';
 
 const upload = multer({
   storage: multerS3({
@@ -23,42 +25,52 @@ const upload = multer({
 
 export class UpdateProductController {
   private updateProductUseCase: UpdateProductUseCase;
+  private productSaga: ProductSaga;
 
   constructor(private repository: IProductRepository) {
     this.updateProductUseCase = new UpdateProductUseCase(repository);
+    this.productSaga = new ProductSaga();
   }
 
   async update(req: Request, res: Response): Promise<void> {
-    upload(req, res, async (error: any) => {
-      if (error) {
-        return res.status(500).json({ message: 'Error uploading file', error: error.toString() });
-      }
+    try {
+      upload(req, res, async (uploadError: any) => {
+        if (uploadError) {
+          return res.status(500).json({ message: 'Error uploading file', error: uploadError.toString() });
+        }
 
-      const productId: string = req.params.productId;
-      const { name, precio, quantity, sales_description, category, form } = req.body;
-      const image = (req.file as Express.MulterS3.File)?.location; // URL de la imagen en S3
+        const productId: string = req.params.productId;
+        const { name, precio, quantity, sales_description, category, form, id_Store } = req.body;
+        const image = (req.file as Express.MulterS3.File)?.location;
 
-      if (!name || !precio || !quantity || !sales_description || !category) {
-        return res.status(400).json({ message: 'Invalid request body' });
-      }
+        const productData: Partial<AProduct> = {
+          name,
+          precio,
+          quantity,
+          sales_description,
+          category,
+          form: new Form(form.description, form.creation_date, form.approximate_expiration_date, form.quality, form.manipulation),
+          id_Store,
+          image 
+        };
 
-      const productData: Partial<AProduct> = {
-        name,
-        precio,
-        quantity,
-        sales_description,
-        category,
-        form: new Form(form.description, form.creation_date, form.approximate_expiration_date, form.quality, form.manipulation),
-        image // Actualiza la URL de la imagen solo si se proporciona una nueva imagen
-      };
+        const result = await this.updateProductUseCase.execute(productId, productData);
 
-      const result = await this.updateProductUseCase.execute(productId, productData);
-
-      if ('error' in result) {
-        res.status(404).json({ message: 'Product not found', error: result.error });
-      } else {
-        res.status(200).json({ message: 'Product updated successfully', product: result });
-      }
-    });
+        if ('error' in result) {
+          res.status(404).json({ message: 'Failed to update product', error: result.error });
+        } else {
+          try {
+            const message = { action: 'updateProduct', productData: result };
+            console.log('Publishing message to queue:', message);
+            await this.productSaga.executeSaga(message, 'update');
+            res.status(200).json({ message: 'Product updated successfully and saga executed', product: result });
+          } catch (sagaError) {
+            res.status(500).json({ message: 'Saga execution failed', error: (sagaError as Error).toString() });
+          }
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Internal Server Error', error: (error as Error).toString() });
+    }
   }
 }

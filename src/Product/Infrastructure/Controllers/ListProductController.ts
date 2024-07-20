@@ -13,8 +13,8 @@ export class ListProductController {
     try {
       const products = await this.listProductsUseCase.execute();
       res.status(200).json(products);
-    } catch (error) {
-      res.status(500).json({ message: 'Internal Server Error', error});
+    } catch (error: any) {
+      res.status(500).json({ message: 'Internal Server Error', error: error.toString() });
     }
   }
 }

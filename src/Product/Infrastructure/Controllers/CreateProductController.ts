@@ -1,3 +1,4 @@
+// CreateProductController.ts
 import { Request, Response } from 'express';
 import { CreateProductUseCase } from '../../Application/UseCases/CreateProductUseCase';
 import { IProductRepository } from '../../Domain/Repositories/IProductRepository';
@@ -6,10 +7,11 @@ import { Form } from '../../Domain/Entities/Form';
 import { s3 } from '../Config/awsConfig';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
+import { ProductSaga } from '../Services/ProductSaga';
 
 const upload = multer({
   storage: multerS3({
-    s3, 
+    s3,
     bucket: process.env.AWS_S3_BUCKET_NAME!,
     acl: 'public-read',
     metadata: function (req, file, cb) {
@@ -23,41 +25,55 @@ const upload = multer({
 
 export class CreateProductController {
   private createProductUseCase: CreateProductUseCase;
+  private productSaga: ProductSaga;
 
   constructor(private repository: IProductRepository) {
     this.createProductUseCase = new CreateProductUseCase(repository);
+    this.productSaga = new ProductSaga();
   }
 
   async create(req: Request, res: Response): Promise<void> {
-    upload(req, res, async (error: any) => {
-      if (error) {
-        return res.status(500).json({ message: 'Error uploading file', error: error.toString() });
-      }
+    try {
+      upload(req, res, async (uploadError: any) => {
+        if (uploadError) {
+          return res.status(500).json({ message: 'Error uploading file', error: uploadError.toString() });
+        }
 
-      const { name, precio, quantity, sales_description, category, form} = req.body;
-      const image = (req.file as Express.MulterS3.File).location; // URL de la imagen en S3
+        const { name, precio, quantity, sales_description, category, form, id_Store } = req.body;
+        const image = (req.file as Express.MulterS3.File)?.location;
 
-      if (!name || !precio || !quantity || !sales_description || !category || !image) {
-        return res.status(400).json({ message: 'Invalid request body' });
-      }
+        if (!name || !precio || !quantity || !sales_description || !category || !image || !id_Store) {
+          return res.status(400).json({ message: 'Invalid request body' });
+        }
 
-      const productData: AProduct = new AProduct(
-        name,
-        precio,
-        quantity,
-        sales_description,
-        category,
-        new Form(form.description, form.creation_date, form.approximate_expiration_date, form.quality, form.manipulation),
-        image // Añadimos la URL de la imagen aquí
-      );
+        const productData: AProduct = new AProduct(
+          name,
+          precio,
+          quantity,
+          sales_description,
+          category,
+          new Form(form.description, form.creation_date, form.approximate_expiration_date, form.quality, form.manipulation),
+          id_Store,
+          image
+        );
 
-      const result = await this.createProductUseCase.execute(productData);
+        const result = await this.createProductUseCase.execute(productData);
 
-      if ('error' in result) {
-        res.status(400).json({ message: 'Failed to create product', error: result.error });
-      } else {
-        res.status(201).json({ message: 'Product created successfully', product: result });
-      }
-    });
+        if ('error' in result) {
+          res.status(400).json({ message: 'Failed to create product', error: result.error });
+        } else {
+          try {
+            const message = { action: 'createProduct', productData: result };
+            console.log('Publishing message to queue:', message);
+            await this.productSaga.executeSaga(message,'create');
+            res.status(201).json({ message: 'Product created successfully and saga executed', product: result });
+          } catch (sagaError) {
+            res.status(500).json({ message: 'Saga execution failed', error: (sagaError as Error).toString() });
+          }
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Internal Server Error', error: (error as Error).toString() });
+    }
   }
 }
