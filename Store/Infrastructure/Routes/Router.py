@@ -1,5 +1,5 @@
 from Infrastructure.Controllers import (
-    CreateStoreController, GetStoresController, GetStoreByUuidController)
+    CreateStoreController, GetStoresController, GetStoreByUuidController, UpdateStoreController)
 from Infrastructure.Security.AuthStore import configure_jwt
 
 
@@ -11,3 +11,5 @@ def initialize_routes(app, storeRepository):
         storeRepository), url_prefix='/stores')
     app.register_blueprint(GetStoreByUuidController.get_store_by_uuid(
         storeRepository), url_prefix='/store')
+    app.register_blueprint(UpdateStoreController.update_store(
+        storeRepository), url_prefix='/update-store')

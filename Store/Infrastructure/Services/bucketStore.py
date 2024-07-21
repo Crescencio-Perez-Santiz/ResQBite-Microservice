@@ -15,3 +15,14 @@ def send_file(file_name, bucket_name, store_uuid, object_name=None):
     except Exception as e:
         print(e)
         return False
+
+
+def delete_file(file_url, bucket_name):
+    try:
+        object_name = file_url.split(
+            f"https://{bucket_name}.nyc3.digitaloceanspaces.com/")[1]
+        client.delete_object(Bucket=bucket_name, Key=object_name)
+        return True
+    except Exception as e:
+        print(e)
+        return False
