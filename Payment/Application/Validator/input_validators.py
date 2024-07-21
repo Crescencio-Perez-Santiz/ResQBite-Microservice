@@ -18,8 +18,7 @@ def validate_save_payment(data):
         if field not in data:
             raise ValueError(f'Missing required field: {field}')
 
-    if not isinstance(data['amount'], int):
-        raise ValueError('Amount must be an integer')
+    
     if not isinstance(data['name'], str):
         raise ValueError('Name must be a string')
     if not isinstance(data['description'], str):

@@ -10,18 +10,19 @@ Base = declarative_base()
 class PaymentModel(Base):
     __tablename__ = 'Payment'
 
-    id = Column(Integer, primary_key=True)
-    name_uuid = Column(String(36), unique=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(36), unique=True)
     amount = Column(Integer, nullable=False)
     description = Column(String(50), nullable=False)
     
     def to_dict(self):
         return {
             'id': self.id,
-            'name_uuid': self.name_uuid,
+            'name': self.name,
             'amount': self.amount,
             'description': self.description,
         }
+
 
 class DBConnection:
     def __init__(self):

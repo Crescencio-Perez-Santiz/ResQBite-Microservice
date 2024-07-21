@@ -1,5 +1,6 @@
-Flask==2.0.3
-stripe==2.56.0
-pymongo==3.11.4
-python-dotenv==0.17.1
-cryptography==41.0.1
+Flask==2.0.2
+python-dotenv==0.19.2
+stripe==2.60.0
+SQLAlchemy==1.4.25
+pymysql==1.0.2
+Werkzeug==2.0.2
