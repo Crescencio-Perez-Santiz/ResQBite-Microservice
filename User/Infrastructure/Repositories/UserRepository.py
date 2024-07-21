@@ -82,3 +82,11 @@ class UserRepository(UserInterface):
         user.store_uuid = store_uuid
         self.session.commit()
         return user
+    
+    def update_user_type(self, user_uuid, user_type):
+        user = self.get_user_by_uuid(user_uuid)
+        if user is None:
+            raise Exception("User not found")
+        user.user_type_suscriber = user_type
+        self.session.commit()
+        return user

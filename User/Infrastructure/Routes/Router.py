@@ -4,7 +4,8 @@ from Infrastructure.Controllers import (
     GetUserController,
     GetUserByEmailController,
     UpdateUserController,
-    UpdateLocationController
+    UpdateLocationController,
+    UpdateUserTypeSuscriberController
 )
 from Infrastructure.Security.JWTSecurity import configure_jwt
 
@@ -23,3 +24,4 @@ def initialize_user_router(app, userRepository):
                            url_prefix="/update_user")
     app.register_blueprint(UpdateLocationController.create_update_location_controller
                            (userRepository), url_prefix="/update_location")
+    app.register_blueprint(UpdateUserTypeSuscriberController.create_update_user_type_suscriber_controller(userRepository), url_prefix="/update_user_type_suscriber")
