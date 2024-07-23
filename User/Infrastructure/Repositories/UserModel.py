@@ -26,5 +26,5 @@ class User(Base):
             "last_name": self.last_name,
             "address": self.address,
             "phone_number": self.phone_number,
-            "user_uuid": self.store_uuid
+            "store_uuid": self.store_uuid
         }

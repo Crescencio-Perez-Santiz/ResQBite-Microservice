@@ -13,4 +13,4 @@ if __name__ == "__main__":
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
     context.load_cert_chain(certfile='fullchain.pem', keyfile='privkey.pem')
 
-    app.run("0.0.0.0", 5000, debug=True, load_dotenv=True)
+    app.run("0.0.0.0", 5000, ssl_context=context, debug=True, load_dotenv=True)
