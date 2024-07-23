@@ -6,6 +6,8 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
+COPY fullchain.pem privkey.pem /app/
+
 COPY . .
 
 EXPOSE 5001
