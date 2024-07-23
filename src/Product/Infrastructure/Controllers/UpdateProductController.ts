@@ -1,4 +1,4 @@
-// UpdateProductController.ts
+
 import { Request, Response } from 'express';
 import { UpdateProductUseCase } from '../../Application/UseCases/UpdateProductUseCase';
 import { IProductRepository } from '../../Domain/Repositories/IProductRepository';
@@ -8,6 +8,9 @@ import { s3 } from '../Config/awsConfig';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import { ProductSaga } from '../Services/ProductSaga';
+
+import { classifyText } from '../NPL/TextClassifier_Grosery';
+import { containsNonFoodWords } from '../NPL/TextClassifier_nonFood';
 
 const upload = multer({
   storage: multerS3({
@@ -40,8 +43,33 @@ export class UpdateProductController {
         }
 
         const productId: string = req.params.productId;
-        const { name, precio, quantity, sales_description, category, form, id_Store } = req.body;
+        const { name, precio, quantity, sales_description, category, form, uuid_Store } = req.body;
         const image = (req.file as Express.MulterS3.File)?.location;
+
+        if (!name || !precio || !quantity || !sales_description || !category || !image || !uuid_Store) {
+          return res.status(400).json({ message: 'Invalid request body' });
+        }
+
+        // Verificar que no se hable de objetos
+        const nameHasNonFoodWords = containsNonFoodWords(name);
+        const sales_descriptionHasNonFoodWords = containsNonFoodWords(sales_description);
+        const descriptionHasNonFoodWords = containsNonFoodWords(form.description);
+
+        if (descriptionHasNonFoodWords || nameHasNonFoodWords || sales_descriptionHasNonFoodWords) {
+          return res.status(400).json({ message: 'No se encontro relación con comida' });
+        }
+
+
+        // Verificar lenguaje inapropiado en formulario
+        const descriptionStatus = classifyText(form.description);
+        const qualityStatus = classifyText(form.quality);
+        const manipulationStatus = classifyText(form.manipulation);
+
+        if (descriptionStatus === "El texto contiene lenguaje inapropiado." || 
+            qualityStatus === "El texto contiene lenguaje inapropiado." || 
+            manipulationStatus === "El texto contiene lenguaje inapropiado.") {
+          return res.status(400).json({ message: 'Lenguaje inapropiado en el formulario' });
+        }
 
         const productData: Partial<AProduct> = {
           name,
@@ -50,7 +78,7 @@ export class UpdateProductController {
           sales_description,
           category,
           form: new Form(form.description, form.creation_date, form.approximate_expiration_date, form.quality, form.manipulation),
-          id_Store,
+          uuid_Store,
           image 
         };
 

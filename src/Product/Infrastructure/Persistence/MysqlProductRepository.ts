@@ -15,7 +15,7 @@ export class MySQLProductRepository implements IProductRepository {
         quantity: product.quantity,
         sales_description: product.sales_description,
         category: product.category,
-        id_Store: product.id_Store,
+        uuid_Store: product.uuid_Store,
         image: product.image,
         form: {
           description: product.form.description,
@@ -59,9 +59,9 @@ export class MySQLProductRepository implements IProductRepository {
     }
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(product_uuid: string): Promise<void> {
     try {
-      await Product.destroy({ where: { id } });
+      await Product.destroy({ where: { product_uuid } });
     } catch (error) {
       throw new Error(`Failed to delete product: ${error}`);
     }
@@ -89,6 +89,18 @@ export class MySQLProductRepository implements IProductRepository {
       return updatedProduct.toJSON() as AProduct;
     } catch (error) {
       throw new Error(`Failed to update product: ${error}`);
+    }
+  }
+
+  async getByUuidStore(uuid_Store: string): Promise<AProduct[]> {
+    try {
+      const products = await Product.findAll({ where: { uuid_Store } });
+      return products.map(product => product.toJSON() as AProduct);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to find products by store UUID: ${error.message}`);
+      }
+      throw error;
     }
   }
   

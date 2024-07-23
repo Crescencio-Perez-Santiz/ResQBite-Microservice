@@ -11,10 +11,10 @@ export class AProduct {
   sales_description: string;
   category: string;
   form:Form;
-  id_Store:number;
+  uuid_Store:string;
   image?: string; 
 
-  constructor(name: string, precio: number, quantity: number, sales_description: string, category: string ,form:Form,  id_Store:number, image?: string) {
+  constructor(name: string, precio: number, quantity: number, sales_description: string, category: string ,form:Form,  uuid_Store:string, image?: string) {
     this.product_uuid = uuidv4();
     this.name = name;
     this.precio = precio;
@@ -22,7 +22,7 @@ export class AProduct {
     this.sales_description = sales_description;
     this.category = category;
     this.form=form;
-    this.id_Store = id_Store;
+    this.uuid_Store = uuid_Store;
     this.image = image; 
     
     

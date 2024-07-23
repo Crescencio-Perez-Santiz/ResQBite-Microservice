@@ -26,7 +26,7 @@ Product.init({
   quantity: { type: DataTypes.INTEGER, allowNull: false },
   sales_description: { type: DataTypes.STRING, allowNull: false },
   category: { type: DataTypes.STRING, allowNull: false },
-  id_Store:{type: DataTypes.INTEGER, allowNull: false},
+  uuid_Store:{type: DataTypes.STRING, allowNull: false},
   form: {type: DataTypes.JSON, allowNull: false },
   image: { type: DataTypes.STRING },
 }, {

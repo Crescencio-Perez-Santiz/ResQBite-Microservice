@@ -4,6 +4,9 @@ import routes from './Product/Interfaces/Delivery/Routes';
 import dotenv from 'dotenv';
 import { sequelize } from './Product/Infrastructure/Config/mysqlConnection';
 import { connect as connectRabbitMQ } from './Product/Infrastructure/Config/rabbitMQConfig';
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
 
 const app: Application = express();
 dotenv.config();
@@ -32,8 +35,16 @@ connectRabbitMQ()
   });
 
 app.use('/', routes);
-app.listen(PORT, () => {
-  console.log(`Servicio ${SERVICE_NAME} corriendo en http://localhost:${PORT}`);
+
+// Leer los certificados SSL
+const httpsOptions = {
+  key: fs.readFileSync(path.join(__dirname, 'privkey.pem')),
+  cert: fs.readFileSync(path.join(__dirname, 'fullchain.pem'))
+};
+
+// Crear el servidor HTTPS
+https.createServer(httpsOptions, app).listen(PORT, () => {
+  console.log(`Servicio ${SERVICE_NAME} corriendo en https://localhost:${PORT}`);
 });
 
 export default app;
