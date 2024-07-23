@@ -32,6 +32,14 @@ export const publishOrderCreatedEvent = async (order: Order) => {
         );
         console.log("Order created event published");
 
+        // Enviar a inventoryUpdates
+        await channel.assertQueue("inventoryUpdates");
+        channel.sendToQueue(
+            "inventoryUpdates",
+            Buffer.from(JSON.stringify(orderData))
+        );
+        console.log("Mensaje enviado a inventoryUpdates:", orderData);
+
         await channel.close();
         await connection.close();
     } catch (error) {

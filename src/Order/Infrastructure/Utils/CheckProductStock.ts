@@ -27,7 +27,7 @@ export const checkProductStock = async (
                     "Tiempo de espera agotado al verificar el stock del producto"
                 )
             );
-        }, 5000); // Tiempo de espera de 5 segundos
+        }, 5000);
 
         channel.consume("inventory", (msg) => {
             if (msg !== null) {
