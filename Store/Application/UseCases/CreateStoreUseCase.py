@@ -31,8 +31,7 @@ class CreateStoreUseCase:
         hex_dig = hash_object.hexdigest()
         filename = f"{hex_dig}{os.path.splitext(original_filename)[1]}"
         temp_dir = tempfile.gettempdir()
-        temp_path = os.path.join(
-            temp_dir, filename)
+        temp_path = os.path.join(temp_dir, filename)
 
         store_data_complete = Store(
             name=store_data['name'],
@@ -46,8 +45,7 @@ class CreateStoreUseCase:
         bucket_name = os.getenv('S3_BUCKET_NAME')
         path = os.getenv('S3_PATH')
         object_name = f"{path}/{filename}"
-        send_file(temp_path, bucket_name, store_uuid, object_name
-                  )
+        send_file(temp_path, bucket_name, store_uuid, object_name)
         region = os.getenv('S3_REGION')
         space_name = bucket_name
         image_url = f"https://{space_name}.{
@@ -83,4 +81,5 @@ class CreateStoreUseCase:
         saga = NewStoreServiceSaga()
         saga.send_store_info(store_data_complete)
 
-        return self.store_repository.create(store_data_complete).to_dict()
+        result = self.store_repository.create(store_data_complete)
+        return result.to_dict()

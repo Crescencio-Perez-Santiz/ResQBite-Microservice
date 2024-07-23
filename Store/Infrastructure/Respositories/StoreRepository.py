@@ -6,10 +6,11 @@ from .ModelStore import Store
 
 class StoreRepository(StoreInterface):
     def __init__(self):
-        self.session = MySQLConnection().Session()
+        self.db_connection = MySQLConnection()
+        self.session = self.db_connection.Session()
 
     def create(self, store: StoreDomain) -> Store:
-        store = Store(
+        new_store = Store(
             uuid=store.uuid,
             name=store.name,
             rfc=store.rfc,
@@ -24,46 +25,85 @@ class StoreRepository(StoreInterface):
             closing_hours=store.information.closing_hours,
             user_uuid=store.user_uuid
         )
-
-        self.session.add(store)
-        self.session.commit()
-        return store
+        try:
+            self.session.add(new_store)
+            self.session.commit()
+            return new_store
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def getStore(self, uuid: str):
-        return self.session.query(Store).filter_by(uuid=uuid).first()
+        try:
+            return self.session.query(Store).filter_by(uuid=uuid).first()
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def phone_exists(self, phone):
-        return self.session.query(Store).filter_by(phone_number=phone).count() > 0
+        try:
+            return self.session.query(Store).filter_by(phone_number=phone).count() > 0
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def update(self, store_data, user_uuid):
-        store = self.get_store_by_user_uuid(user_uuid)
-        if not store:
-            raise ValueError("Store not found")
+        try:
+            store = self.get_store_by_user_uuid(user_uuid)
+            if not store:
+                raise ValueError("Store not found")
 
-        if not isinstance(store_data, dict):
-            try:
-                store_data = store_data.to_dict()
-            except AttributeError:
-                raise ValueError(
-                    "store_data must be a dictionary or have a to_dict method")
+            if not isinstance(store_data, dict):
+                try:
+                    store_data = store_data.to_dict()
+                except AttributeError:
+                    raise ValueError(
+                        "store_data must be a dictionary or have a to_dict method")
 
-        for key, value in store_data.items():
-            setattr(store, key, value)
+            for key, value in store_data.items():
+                setattr(store, key, value)
 
-        self.session.commit()
-        return store
+            self.session.add(store)
+            self.session.commit()
+            return store
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def get_by_uuid(self, uuid: str):
-        return self.session.query(Store).filter_by(uuid=uuid).first()
+        try:
+            return self.session.query(Store).filter_by(uuid=uuid).first()
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def list_stores(self) -> list:
-        return self.session.query(Store).all()
+        try:
+            return self.session.query(Store).all()
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def get_store_by_rfc(self, rfc: str):
-        return self.session.query(Store).filter_by(rfc=rfc).first()
+        try:
+            return self.session.query(Store).filter_by(rfc=rfc).first()
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def get_store_by_phone_number(self, phone_number: str):
-        return self.session.query(Store).filter_by(phone_number=phone_number).first()
+        try:
+            return self.session.query(Store).filter_by(phone_number=phone_number).first()
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def get_store_by_user_uuid(self, user_uuid: str):
-        return self.session.query(Store).filter_by(user_uuid=user_uuid).first()
+        try:
+            return self.session.query(Store).filter_by(user_uuid=user_uuid).first()
+        except Exception as e:
+            self.session.rollback()
+            raise e
+
+    def close_session(self):
+        self.session.close()
