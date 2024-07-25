@@ -69,7 +69,8 @@ export const createOrder = async (decoded: any, orderData: any) => {
                     item.orderItemUuid,
                     item.product_uuid,
                     item.quantity,
-                    item.price
+                    item.price,
+                    item.category
                 )
         )
     );

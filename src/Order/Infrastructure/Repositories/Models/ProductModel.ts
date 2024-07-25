@@ -23,6 +23,9 @@ export class ProductModel {
     @Column()
     image_url!: string;
 
+    @Column()
+    category!: string;
+
     @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     created_at!: Date;
 

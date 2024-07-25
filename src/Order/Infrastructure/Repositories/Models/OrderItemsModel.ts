@@ -15,6 +15,9 @@ export class OrderItemModel {
     @Column("decimal")
     price!: number;
 
+    @Column()
+    category!: string;
+
     @ManyToOne(() => OrderModel, (order) => order.items)
     order!: OrderModel;
 }

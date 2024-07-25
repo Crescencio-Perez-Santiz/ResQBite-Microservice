@@ -22,6 +22,7 @@ export const handleProductCreationOrUpdate = async (productData: any) => {
         existingProduct.price = productData.precio;
         existingProduct.name = productData.name;
         existingProduct.description = productData.sales_description;
+        existingProduct.category = productData.category;
         existingProduct.image_url = productData.image;
         existingProduct.updated_at = new Date();
         await productRepository.save(existingProduct);
@@ -36,6 +37,7 @@ export const handleProductCreationOrUpdate = async (productData: any) => {
             price: productData.precio,
             quantity: productData.quantity,
             description: productData.sales_description,
+            category: productData.category,
             image_url: productData.image,
             created_at: new Date(),
             updated_at: new Date(),
