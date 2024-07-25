@@ -11,22 +11,18 @@ from tensorflow.keras.layers import LSTM, Dense
 def get_sales_predictions(store_uuid):
     orders = get_finalized_orders_by_store(store_uuid)
 
-    # Procesar datos históricos para obtener ventas mensuales
     sales_data = pd.DataFrame(
         [{'date': order.created_at, 'quantity': order.total_price} for order in orders])
     sales_data['date'] = pd.to_datetime(sales_data['date'])
     sales_data.set_index('date', inplace=True)
-    # Use 'MS' instead of 'M' for monthly start frequency
     monthly_sales = sales_data.resample('MS').sum()
 
-    # Sección de datos reales
     real_data = [{'month': date.strftime('%Y-%m'), 'quantity': quantity}
                  for date, quantity in monthly_sales['quantity'].items()]
 
     prediction_data = []
 
-    if len(monthly_sales) >= 24:  # Ensure at least two years of data for seasonality
-        # Predicción con Suavizado Exponencial Triple
+    if len(monthly_sales) >= 24:
         model_hw = ExponentialSmoothing(
             monthly_sales['quantity'], seasonal='add', seasonal_periods=12).fit()
         hw_forecast = model_hw.forecast(steps=3)
@@ -40,7 +36,6 @@ def get_sales_predictions(store_uuid):
     rnn_data = monthly_sales['quantity'].values
     rnn_data = rnn_data.reshape(-1, 1)
 
-    # Crear secuencias para el modelo RNN
     def create_sequences(data, seq_length):
         xs, ys = [], []
         for i in range(len(data)-seq_length):
@@ -54,14 +49,12 @@ def get_sales_predictions(store_uuid):
     if len(rnn_data) > seq_length:
         X, y = create_sequences(rnn_data, seq_length)
 
-        # Crear y entrenar el modelo RNN
         model_rnn = Sequential()
         model_rnn.add(LSTM(50, activation='relu', input_shape=(seq_length, 1)))
         model_rnn.add(Dense(1))
         model_rnn.compile(optimizer='adam', loss='mse')
         model_rnn.fit(X, y, epochs=200, verbose=0)
 
-        # Hacer predicciones
         rnn_input = rnn_data[-seq_length:].reshape((1, seq_length, 1))
         for _ in range(3):
             pred = model_rnn.predict(rnn_input)
