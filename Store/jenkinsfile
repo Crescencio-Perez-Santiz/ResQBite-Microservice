@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'store-service'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'feature/store-service', url: 'https://github.com/Crescens-Henry/ResQBite-Microservice.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    docker.build("${env.DOCKER_IMAGE}", "-f Store/dockerfile Store")
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    docker.image("${env.DOCKER_IMAGE}").inside {
+                        sh 'pytest Store/Tests'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                        docker.image("${env.DOCKER_IMAGE}").push('latest')
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                docker.image("${env.DOCKER_IMAGE}").prune()
+            }
+        }
+        success {
+            echo 'Pipeline completado con éxito.'
+        }
+        failure {
+            echo 'Pipeline fallido.'
+        }
+    }
+}
